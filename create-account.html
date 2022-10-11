@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Security-Policy" content="script-src * 'unsafe-inline' 'unsafe-eval'; object-src 'self';">
+
+  <title>SAGE Register</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+  <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script>if (window.module) module = window.module;</script>
+  
+</head>
+
+<style>
+
+   html {
+      min-height: 100%;
+      margin: 0;
+   }
+   body {
+      min-height: 100vh;
+      margin: 0;
+      background-color: lightgray;
+   }
+   .vcenter{
+      padding: 50px 0  ;
+   }
+
+</style>
+
+<body>
+
+<div class="container" >
+   <center>
+      <div class="vcenter">
+         <h1>Create new Account</h1><br>
+         <div id="out">
+            <h3><span style="color:mediumpurple">Mnemonic: </span><span id="mnemonic"></span></h3>
+            <div class="form-group">
+                <label for="usr"> <h3>Account Name:</h3></label>
+                <input type="text" class="form-control" id="name" style="width:250px">
+            </div><br>
+            <button type="button" class="btn btn-primary btn-lg" id="register">Register</button>
+            <h3><span style="color:green" id="address-header"> </span><span id="address"></span></h3>
+        </div>
+      </div>
+   </center>
+</div>
+
+</body>
+<script>
+    
+    const {ipcRenderer} = require('electron') 
+
+    ipcRenderer.send('ipc-req-get-mnemonic');
+
+    $('#register').on('click', () => {
+        name = $('#name').val()
+        console.log(name)
+        ipcRenderer.send('ipc-req-register', name);
+    });
+
+    ipcRenderer.on('resp-register', (event, arg) => {
+        if(!arg.error){
+            $('#address-header').text("Successfully Registered, Your Public address is:")
+            $('#address').text(arg.op.address)
+            $("#register").attr("disabled", true);
+            setTimeout(()=>{
+                window.location.replace("home.html");
+            }, 5000)
+        }
+    })
+
+    ipcRenderer.on('resp-get-mnemonic', (event, arg) => {
+        if(!arg.error){
+            $('#mnemonic').text(arg.op)
+        }
+    })
+    
+ </script>
+</html>

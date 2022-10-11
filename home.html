@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Security-Policy" content="script-src * 'unsafe-inline' 'unsafe-eval'; object-src 'self';">
+
+  <title>SAGE Home</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+  <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script>if (window.module) module = window.module;</script>
+  
+</head>
+
+<style>
+
+   html {
+      min-height: 100%;
+      margin: 0;
+   }
+   body {
+      min-height: 100vh;
+      margin: 0;
+      background-color: lightgray;
+   }
+   .vcenter{
+      padding: 50px 0  ;
+   }
+
+</style>
+
+<body>
+
+<button type="button" class="btn btn-primary btn-lg" id="sign-out" style="float:right;margin:25px;word-wrap: break-word;max-width: 110px;white-space: normal !important;">Use Different Account</button>
+
+<div class="container" >
+   <center>
+      <div class="vcenter">
+
+         <h1>WELCOME TO SAGE</h1><br>
+         <div id="out">
+            <h3><span style="color:green">Your Public Address: </span><span id="address"></span></h3>
+        </div>
+      </div>
+   </center>
+</div>
+
+</body>
+<script>
+    
+    const {ipcRenderer} = require('electron') 
+
+    ipcRenderer.send('ipc-req-get-my-address');
+
+    ipcRenderer.on('resp-get-my-address', (event, arg) => {
+        console.log(arg)
+        if(!arg.error){
+            $('#address').text(arg.op)
+        }
+    })
+
+    ipcRenderer.on('resp-sign-out', (event, arg) => {
+        if(!arg.error){
+            alert("sign-out success")
+            window.location.replace("register.html");
+        }
+    })
+    
+    $('#sign-out').on('click', () => {
+        ipcRenderer.send('ipc-req-sign-out', name);
+    });
+
+ </script>
+</html>
