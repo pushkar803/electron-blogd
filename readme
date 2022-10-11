@@ -1,4 +1,4 @@
 to run:
 
-    npm i
-    electron .
+	npm i
+	electron .
